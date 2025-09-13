@@ -1,0 +1,6 @@
+fastapi
+uvicorn[standard]
+tensorflow         # matches your train environment (tensorflow or tensorflow-cpu)
+pillow
+numpy
+python-multipart   # for form parsing
