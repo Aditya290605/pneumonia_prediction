@@ -1,12 +1,29 @@
-from fastapi import FastAPI, File, UploadFile
+from fastapi import FastAPI, File, UploadFile, Request
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
+from fastapi.middleware.cors import CORSMiddleware
 import tensorflow as tf
 import numpy as np
 import cv2
 import pickle
 import uuid
 import os
+import google.generativeai as genai
+from dotenv import load_dotenv
+
+app = FastAPI(title="Pneumonia Detection API + Report Service")
+
+# Allow requests from Flutter web
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # allow all during dev
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+load_dotenv()
+
 
 # --- Config ---
 MODEL_PATH = "attention_model.keras"   # change path
@@ -21,13 +38,17 @@ with open(THRESHOLD_PATH, "rb") as f:
 
 model = tf.keras.models.load_model(MODEL_PATH, compile=False)
 
-# --- Create FastAPI app ---
-app = FastAPI(title="Pneumonia Detection API")
+# --- Gemini config ---
+genai.configure(api_key=os.getenv("GEMINI_KEY"))
+gemini_model = genai.GenerativeModel("gemini-2.0-flash")
 
-# Serve the outputs directory as static files
+# Serve static diagnosed images.
 app.mount("/outputs", StaticFiles(directory=OUTPUT_DIR), name="outputs")
 
 
+# ---------------------------
+#   ROUTE 1: PREDICT
+# ---------------------------
 @app.post("/predict")
 async def predict(file: UploadFile = File(...)):
     try:
@@ -37,7 +58,7 @@ async def predict(file: UploadFile = File(...)):
         with open(temp_path, "wb") as f_out:
             f_out.write(await file.read())
 
-        # --- Read + preprocess image ---
+        # --- Preprocess image ---
         img = cv2.imread(temp_path)
         if img is None:
             return JSONResponse(status_code=400, content={"error": "Invalid image"})
@@ -46,7 +67,7 @@ async def predict(file: UploadFile = File(...)):
         img_resized = cv2.resize(img_rgb, IMG_SIZE)
         img_array = np.expand_dims(img_resized / 255.0, axis=0)
 
-        # --- Predict ---
+        # --- Prediction ---
         prob = float(model.predict(img_array, verbose=0).ravel()[0])
         prediction = "PNEUMONIA" if prob > best_thresh else "NORMAL"
 
@@ -65,10 +86,10 @@ async def predict(file: UploadFile = File(...)):
                     cv2.FONT_HERSHEY_SIMPLEX, 1, color, 2, cv2.LINE_AA)
         cv2.imwrite(diagnosed_path, cv2.cvtColor(output_img, cv2.COLOR_RGB2BGR))
 
-        # --- Build public URL for diagnosed image ---
         diagnosed_url = f"/outputs/{diagnosed_filename}"
 
-        return {
+        # --- Base result ---
+        result = {
             "prediction": prediction,
             "probability": prob,
             "threshold_used": float(best_thresh),
@@ -76,5 +97,62 @@ async def predict(file: UploadFile = File(...)):
             "diagnosed_image_url": diagnosed_url
         }
 
+        # --- ALSO generate report automatically ---
+        try:
+            report = await generate_report_internal(result)
+            result["report"] = report
+        except Exception as e:
+            result["report"] = {"error": str(e)}
+
+        return result
+
     except Exception as e:
         return JSONResponse(status_code=500, content={"error": str(e)})
+
+
+# ---------------------------
+#   ROUTE 2: REPORT
+# ---------------------------
+@app.post("/generate_report")
+async def generate_report(request: Request):
+    """
+    Exposed route if you want to call it separately.
+    """
+    try:
+        data = await request.json()
+        return {"report": await generate_report_internal(data)}
+    except Exception as e:
+        return JSONResponse(status_code=500, content={"error": str(e)})
+
+
+# ---------------------------
+#   HELPER: GEMINI REPORT
+# ---------------------------
+async def generate_report_internal(data: dict):
+    prediction = data.get("prediction")
+    probability = data.get("probability")
+    confidence = data.get("confidence")
+    threshold = data.get("threshold_used")
+
+    prompt = f"""
+    Write a **professional medical-style report** for a patient based on these chest X-ray results:
+
+    - Diagnosis: {prediction}
+    - Probability Score: {probability:.2f}
+    - Confidence Levels: {confidence}
+    - Threshold Used: {threshold}
+
+    The report should:
+    - Avoid phrases like "here’s a summary" or "the computer thinks".
+    - Be written as if it’s a medical assistant summarizing results for a patient.
+    - Have clear sections with headings:
+        1. Diagnosis
+        2. Confidence in Result
+        3. General Health Guidance
+        4. Recommended Next Steps
+    - Use plain, supportive language (easy to understand, but professional).
+    - Keep it concise and structured like a real medical note.
+    """
+
+    response = gemini_model.generate_content(prompt)
+    return response.text
