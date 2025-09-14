@@ -1,6 +1,11 @@
 fastapi
 uvicorn[standard]
-tensorflow         # matches your train environment (tensorflow or tensorflow-cpu)
-pillow
 numpy
-python-multipart   # for form parsing
+opencv-python-headless
+pillow
+python-multipart
+python-dotenv
+google-generativeai
+requests
+# If you want CPU-only TF (recommended for Render), install tensorflow-cpu:
+tensorflow-cpu==2.12.0
