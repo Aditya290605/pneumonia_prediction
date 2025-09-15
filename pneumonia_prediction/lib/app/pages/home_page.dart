@@ -1,3 +1,4 @@
+import 'dart:ffi';
 import 'dart:io' as io;
 import 'dart:typed_data';
 
@@ -206,14 +207,14 @@ Generated on: ${DateTime.now().toString()}
     if (_result == null) return Container();
 
     final confidence =
-        double.tryParse(_result!['confidence'].toString()) ?? 0.0;
+        double.tryParse(_result!['confidence']['NORMAL'].toString()) ?? 0.0;
     final remainingConfidence = 100 - confidence;
 
     return AnimatedBuilder(
       animation: _chartAnimation,
       builder: (context, child) {
         return Container(
-          height: 280,
+          height: 400,
           padding: EdgeInsets.all(20),
           decoration: BoxDecoration(
             gradient: LinearGradient(
@@ -624,7 +625,7 @@ Generated on: ${DateTime.now().toString()}
       animation: _chartAnimation,
       builder: (context, child) {
         return Container(
-          height: 200,
+          height: 250,
           padding: EdgeInsets.all(20),
           decoration: BoxDecoration(
             gradient: LinearGradient(
@@ -703,6 +704,7 @@ Generated on: ${DateTime.now().toString()}
                   ],
                 ),
               ),
+              const SizedBox(height: 12),
               Text(
                 '${(probability * _chartAnimation.value * 100).toStringAsFixed(1)}% Probability',
                 style: TextStyle(
@@ -1122,11 +1124,11 @@ Generated on: ${DateTime.now().toString()}
                     SizedBox(height: 24),
 
                     // Enhanced Charts Section
-                    Row(
+                    Column(
                       children: [
-                        Expanded(child: _buildAdvancedConfidenceChart()),
-                        SizedBox(width: 16),
-                        Expanded(child: _buildAdvancedProbabilityChart()),
+                        _buildAdvancedConfidenceChart(),
+                        SizedBox(height: 20),
+                        _buildAdvancedProbabilityChart(),
                       ],
                     ),
 
@@ -1138,36 +1140,30 @@ Generated on: ${DateTime.now().toString()}
                     SizedBox(height: 20),
 
                     // Enhanced Metrics Cards
-                    Row(
+                    Column(
                       children: [
-                        Expanded(
-                          child: _buildEnhancedMetricCard(
-                            'Probability',
-                            _result!['probability'].toString(),
-                            Icons.percent_rounded,
-                            Colors.blue,
-                            'Model confidence score',
-                          ),
+                        _buildEnhancedMetricCard(
+                          'Probability',
+                          _result!['probability'].toString(),
+                          Icons.percent_rounded,
+                          Colors.blue,
+                          'Model confidence score',
                         ),
-                        SizedBox(width: 12),
-                        Expanded(
-                          child: _buildEnhancedMetricCard(
-                            'Threshold',
-                            _result!['threshold_used'].toString(),
-                            Icons.tune_rounded,
-                            Colors.purple,
-                            'Decision boundary',
-                          ),
+                        SizedBox(height: 12),
+                        _buildEnhancedMetricCard(
+                          'Threshold',
+                          _result!['threshold_used'].toString(),
+                          Icons.tune_rounded,
+                          Colors.purple,
+                          'Decision boundary',
                         ),
-                        SizedBox(width: 12),
-                        Expanded(
-                          child: _buildEnhancedMetricCard(
-                            'Confidence',
-                            _result!['confidence'].toString(),
-                            Icons.verified_rounded,
-                            Colors.green,
-                            'Analysis reliability',
-                          ),
+                        SizedBox(height: 12),
+                        _buildEnhancedMetricCard(
+                          'Confidence',
+                          _result!['confidence'].toString(),
+                          Icons.verified_rounded,
+                          Colors.green,
+                          'Analysis reliability',
                         ),
                       ],
                     ),
@@ -1241,7 +1237,7 @@ Generated on: ${DateTime.now().toString()}
                             ClipRRect(
                               borderRadius: BorderRadius.circular(16),
                               child: Image.network(
-                                "http://127.0.0.1:8000${_result!['diagnosed_image_url']}",
+                                "https://pneumonia-prediction-016u.onrender.com${_result!['diagnosed_image_url']}",
                                 width: double.infinity,
                                 height: 280,
                                 fit: BoxFit.cover,
@@ -1470,6 +1466,7 @@ Generated on: ${DateTime.now().toString()}
     String subtitle,
   ) {
     return Container(
+      width: double.infinity,
       padding: EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -1495,7 +1492,7 @@ Generated on: ${DateTime.now().toString()}
           ),
           SizedBox(height: 12),
           Text(
-            value,
+            "$value",
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
