@@ -6,3 +6,5 @@ opencv-python
 pickle-mixin
 python-dotenv
 google-generativeai
+python-multipart
+
