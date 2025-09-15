@@ -5,7 +5,8 @@ import 'package:flutter/foundation.dart'; // for kIsWeb
 import 'package:http/http.dart' as http;
 
 class ApiService {
-  static const String baseUrl = "http://127.0.0.1:8000"; // change when deployed
+  static const String baseUrl =
+      "https://pneumonia-prediction-016u.onrender.com"; // change when deployed
 
   static Future<Map<String, dynamic>> predict({
     io.File? file,

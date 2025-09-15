@@ -1,6 +1,6 @@
 import 'dart:io' as io;
 import 'dart:typed_data';
-import 'dart:ui' as ui;
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -9,8 +9,6 @@ import 'package:pneumonia_prediction/app/services/get_data.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
-import 'dart:convert';
-import 'dart:math' as math;
 
 class PredictScreen extends StatefulWidget {
   @override

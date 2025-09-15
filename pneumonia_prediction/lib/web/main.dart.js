@@ -22670,7 +22670,7 @@ if(a.charCodeAt(s)!==47)return q
 return b+3},
 BJ(a,b){var s=0,r=A.M(t.a),q,p,o,n,m,l,k
 var $async$BJ=A.I(function(c,d){if(c===1)return A.J(d,r)
-while(true)switch(s){case 0:l=A.avt("POST",A.fu("http://127.0.0.1:8000/predict",0,null))
+while(true)switch(s){case 0:l=A.avt("POST",A.fu("https://pneumonia-prediction-016u.onrender.com/predict",0,null))
 if(a!=null){p=t.zb
 o=new A.l_(null,null,null,null,p)
 o.jc(a)

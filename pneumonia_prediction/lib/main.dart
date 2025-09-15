@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:pneumonia_prediction/app/pages/home_page.dart';
+
 import 'package:pneumonia_prediction/app/pages/stagging_screen.dart';
 
 void main() {
