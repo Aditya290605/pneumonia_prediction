@@ -343,7 +343,7 @@ class _ResultScreenState extends State<ResultScreen>
                   children: [
                     _buildStatItem(
                       'Accuracy',
-                      '98.5%',
+                      '94.3%',
                       Icons.precision_manufacturing_outlined,
                     ),
                     _buildStatItem(
@@ -598,11 +598,18 @@ class _ResultScreenState extends State<ResultScreen>
                       ),
                     ],
                   ),
-                  child: Image.file(
-                    widget.selectedImage,
-                    fit: BoxFit.cover,
-                    height: 220,
-                    width: double.infinity,
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(
+                      minHeight: 220,
+                      maxHeight: 420,
+                    ),
+                    child: Center(
+                      child: Image.file(
+                        widget.selectedImage,
+                        fit: BoxFit.contain,
+                        width: double.infinity,
+                      ),
+                    ),
                   ),
                 ),
               ),

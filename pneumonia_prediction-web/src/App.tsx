@@ -64,7 +64,7 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">
+    <div className="min-h-screen bg-gradient-to-b from-[#0B1220] via-[#0A0F1A] to-black text-gray-200">
       <div className={`transition-all duration-700 ease-in-out ${
         currentScreen === 'landing' ? 'opacity-100 translate-x-0' :
         currentScreen === 'upload' ? 'opacity-100 translate-x-0' :

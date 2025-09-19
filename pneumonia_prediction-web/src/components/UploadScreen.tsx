@@ -76,13 +76,13 @@ const UploadScreen: React.FC<UploadScreenProps> = ({ onAnalysisComplete, onBack,
         <div className="flex items-center gap-4 mb-8 animate-fade-in-up">
           <button
             onClick={onBack}
-            className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-full transition-colors"
+            className="p-2 text-gray-300 hover:text-white glass-effect rounded-full transition-colors"
           >
             <ArrowLeft className="w-6 h-6" />
           </button>
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Upload Chest X-Ray</h1>
-            <p className="text-gray-600 mt-1">Select a clear chest X-ray image for analysis</p>
+            <h1 className="text-3xl font-bold text-white">Upload Chest X-Ray</h1>
+            <p className="text-gray-400 mt-1">Select a clear chest X-ray image for analysis</p>
           </div>
         </div>
 
@@ -90,12 +90,12 @@ const UploadScreen: React.FC<UploadScreenProps> = ({ onAnalysisComplete, onBack,
           {/* Upload Area */}
           <div className="space-y-6 animate-slide-in-right">
             <div
-              className={`medical-card rounded-2xl p-8 border-2 border-dashed transition-all duration-300 cursor-pointer ${
+              className={`medical-card rounded-2xl p-8 border border-dashed transition-all duration-300 cursor-pointer ${
                 isDragOver 
-                  ? 'border-blue-400 bg-blue-50' 
+                  ? 'border-cyan-400/50' 
                   : selectedFile 
-                    ? 'border-green-400 bg-green-50' 
-                    : 'border-gray-300 hover:border-blue-400 hover:bg-blue-50'
+                    ? 'border-emerald-400/50' 
+                    : 'border-white/10 hover:border-cyan-300/40'
               }`}
               onDragOver={handleDragOver}
               onDragLeave={handleDragLeave}
@@ -110,9 +110,9 @@ const UploadScreen: React.FC<UploadScreenProps> = ({ onAnalysisComplete, onBack,
                 className="hidden"
               />
               
-              <div className="text-center">
+              <div className="text-center text-white">
                 {selectedFile ? (
-                  <FileImage className="w-16 h-16 text-green-600 mx-auto mb-4" />
+                  <FileImage className="w-16 h-16 text-emerald-300 mx-auto mb-4" />
                 ) : (
                   <Upload className="w-16 h-16 text-gray-400 mx-auto mb-4" />
                 )}
@@ -120,20 +120,20 @@ const UploadScreen: React.FC<UploadScreenProps> = ({ onAnalysisComplete, onBack,
                 <h3 className="text-lg font-semibold mb-2">
                   {selectedFile ? 'File Selected' : 'Drop your X-ray image here'}
                 </h3>
-                <p className="text-gray-600 mb-4">
+                <p className="text-gray-400 mb-4">
                   {selectedFile ? selectedFile.name : 'or click to browse files'}
                 </p>
                 
-                <div className="flex flex-wrap gap-2 justify-center text-sm text-gray-500">
-                  <span className="bg-gray-100 px-3 py-1 rounded-full">JPG</span>
-                  <span className="bg-gray-100 px-3 py-1 rounded-full">PNG</span>
-                  <span className="bg-gray-100 px-3 py-1 rounded-full">JPEG</span>
+                <div className="flex flex-wrap gap-2 justify-center text-sm text-gray-300">
+                  <span className="bg-white/10 px-3 py-1 rounded-full">JPG</span>
+                  <span className="bg-white/10 px-3 py-1 rounded-full">PNG</span>
+                  <span className="bg-white/10 px-3 py-1 rounded-full">JPEG</span>
                 </div>
               </div>
             </div>
 
             {error && (
-              <div className="flex items-center gap-2 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700">
+              <div className="flex items-center gap-2 p-4 bg-red-500/10 border border-red-400/30 rounded-lg text-red-300">
                 <AlertCircle className="w-5 h-5" />
                 <span>{error}</span>
               </div>
@@ -142,7 +142,7 @@ const UploadScreen: React.FC<UploadScreenProps> = ({ onAnalysisComplete, onBack,
             <button
               onClick={handleAnalyze}
               disabled={!selectedFile || isAnalyzing}
-              className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 disabled:from-gray-400 disabled:to-gray-500 text-white font-semibold py-4 px-6 rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 disabled:transform-none transition-all duration-300 flex items-center justify-center gap-3"
+              className="w-full glass-effect text-white font-semibold py-4 px-6 rounded-xl shadow-xl hover:shadow-2xl transform hover:scale-105 disabled:opacity-50 disabled:hover:scale-100 transition-all duration-300 flex items-center justify-center gap-3"
             >
               {isAnalyzing ? (
                 <>
@@ -161,8 +161,8 @@ const UploadScreen: React.FC<UploadScreenProps> = ({ onAnalysisComplete, onBack,
           {/* Preview Area */}
           <div className="animate-slide-in-right" style={{ animationDelay: '0.2s' }}>
             <div className="medical-card rounded-2xl p-6">
-              <h3 className="text-lg font-semibold mb-4">Image Preview</h3>
-              <div className="aspect-square bg-gray-100 rounded-xl overflow-hidden">
+              <h3 className="text-lg font-semibold mb-4 text-white">Image Preview</h3>
+              <div className="aspect-square bg-white/5 rounded-xl overflow-hidden">
                 {previewUrl ? (
                   <img
                     src={previewUrl}
@@ -181,19 +181,19 @@ const UploadScreen: React.FC<UploadScreenProps> = ({ onAnalysisComplete, onBack,
             </div>
 
             {/* Instructions */}
-            <div className="mt-6 p-6 bg-blue-50 rounded-xl">
-              <h4 className="font-semibold text-blue-900 mb-3">Tips for Best Results:</h4>
-              <ul className="space-y-2 text-sm text-blue-800">
+            <div className="mt-6 p-6 glass-effect rounded-xl">
+              <h4 className="font-semibold text-white mb-3">Tips for Best Results:</h4>
+              <ul className="space-y-2 text-sm text-gray-200">
                 <li className="flex items-start gap-2">
-                  <div className="w-1.5 h-1.5 bg-blue-600 rounded-full mt-2 flex-shrink-0"></div>
+                  <div className="w-1.5 h-1.5 bg-cyan-400 rounded-full mt-2 flex-shrink-0"></div>
                   Use high-quality, clear chest X-ray images
                 </li>
                 <li className="flex items-start gap-2">
-                  <div className="w-1.5 h-1.5 bg-blue-600 rounded-full mt-2 flex-shrink-0"></div>
+                  <div className="w-1.5 h-1.5 bg-cyan-400 rounded-full mt-2 flex-shrink-0"></div>
                   Ensure the entire chest area is visible
                 </li>
                 <li className="flex items-start gap-2">
-                  <div className="w-1.5 h-1.5 bg-blue-600 rounded-full mt-2 flex-shrink-0"></div>
+                  <div className="w-1.5 h-1.5 bg-cyan-400 rounded-full mt-2 flex-shrink-0"></div>
                   Avoid blurry or poorly lit images
                 </li>
               </ul>

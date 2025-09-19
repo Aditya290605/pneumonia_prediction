@@ -84,7 +84,7 @@ const ConfidenceChart: React.FC<ConfidenceChartProps> = ({ confidence, probabili
           </svg>
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="text-center">
-              <div className="text-lg font-bold text-gray-900">
+              <div className="text-lg font-bold text-white">
                 {Math.max(normalPercentage, pneumoniaPercentage).toFixed(0)}%
               </div>
               <div className="text-xs text-gray-600">Confidence</div>
@@ -124,7 +124,7 @@ const ConfidenceChart: React.FC<ConfidenceChartProps> = ({ confidence, probabili
               </svg>
               <div className="absolute inset-0 flex items-center justify-center">
                 <div className="text-center">
-                  <div className="text-base font-bold text-gray-900">{probabilityPercent.toFixed(0)}%</div>
+                  <div className="text-base font-bold text-white">{probabilityPercent.toFixed(0)}%</div>
                   <div className="text-[10px] text-gray-500">Probability</div>
                 </div>
               </div>
