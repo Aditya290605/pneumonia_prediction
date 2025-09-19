@@ -68,7 +68,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
         {/* Statistics */}
         <div className="mt-16 grid grid-cols-3 gap-8 max-w-md mx-auto animate-fade-in-up" style={{ animationDelay: '0.8s' }}>
           <div className="text-center">
-            <div className="text-2xl font-bold text-cyan-300">98%</div>
+            <div className="text-2xl font-bold text-cyan-300">94.33%</div>
             <div className="text-sm text-gray-400">Accuracy</div>
           </div>
           <div className="text-center">
