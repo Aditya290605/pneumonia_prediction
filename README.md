@@ -2,7 +2,7 @@
 
 <div align="center">
 
-![Pneumonia Prediction Banner](https://via.placeholder.com/800x200/4A90E2/FFFFFF?text=Pneumonia+Prediction+AI)
+![Pneumonia Prediction Banner](https://i.postimg.cc/X7G1Hq4g/image.png)
 
 [![Flutter](https://img.shields.io/badge/Flutter-02569B?style=for-the-badge&logo=flutter&logoColor=white)](https://flutter.dev/)
 [![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://reactjs.org/)
@@ -264,7 +264,7 @@ The animated confidence chart uses a sophisticated visualization system:
 
 > 🚧 **Demo Links**
 > - 📱 [Mobile App Demo](https://your-mobile-demo-link.com) - Try the Flutter web version
-> - 🌐 [Web Dashboard Demo](https://your-web-demo-link.com) - Full-featured dashboard
+> - 🌐 [Web Dashboard Demo](https://pneumonia-prediction-steel.vercel.app/) - Full-featured dashboard
 
 ### 📱 Mobile App Screenshots
 
@@ -272,7 +272,7 @@ The animated confidence chart uses a sophisticated visualization system:
 
 | Home Screen | Upload Interface | AI Analysis | Results & Chart |
 |-------------|------------------|-------------|-----------------|
-| <img src="https://via.placeholder.com/250x450/4A90E2/FFFFFF?text=Home+Screen" width="200"/> | <img src="https://via.placeholder.com/250x450/34C759/FFFFFF?text=Upload+X-ray" width="200"/> | <img src="https://via.placeholder.com/250x450/FF9500/FFFFFF?text=AI+Processing" width="200"/> | <img src="https://via.placeholder.com/250x450/FF3B30/FFFFFF?text=Results+Chart" width="200"/> |
+| <img src="https://i.postimg.cc/R0sbpH6X/IMG-20250919-WA0015.jpg" width="200"/> | <img src="https://i.postimg.cc/yx9QNpfb/IMG-20250919-WA0016.jpg" width="200"/> | <img src="https://i.postimg.cc/FK8VJgJ5/IMG-20250919-WA0017.jpg" width="200"/> | <img src="https://i.postimg.cc/9MyZw3hZ/IMG-20250919-WA0019.jpg" width="200"/> |
 
 *Screenshot placeholders - Replace with actual app screenshots*
 
@@ -282,13 +282,13 @@ The animated confidence chart uses a sophisticated visualization system:
 
 <div align="center">
 
-| Dashboard Overview | Analytics Charts | Batch Processing |
+| Dashboard Overview | Upload X-Ray | Analyzes XRAY |
 |--------------------|------------------|------------------|
-| <img src="https://via.placeholder.com/400x250/4A90E2/FFFFFF?text=Dashboard+Overview" width="300"/> | <img src="https://via.placeholder.com/400x250/34C759/FFFFFF?text=Analytics+Charts" width="300"/> | <img src="https://via.placeholder.com/400x250/FF9500/FFFFFF?text=Batch+Upload" width="300"/> |
+| <img src="https://i.postimg.cc/ryWx63fx/image.png" width="300"/> | <img src="https://i.postimg.cc/bvWDW9bm/image.png" width="300"/> | <img src="https://i.postimg.cc/d1cQGHGc/image.png" width="300"/> |
 
-| Detailed Analysis | Export Reports | User Management |
-|-------------------|----------------|-----------------|
-| <img src="https://via.placeholder.com/400x250/FF3B30/FFFFFF?text=Detailed+Analysis" width="300"/> | <img src="https://via.placeholder.com/400x250/5856D6/FFFFFF?text=Export+Reports" width="300"/> | <img src="https://via.placeholder.com/400x250/AF52DE/FFFFFF?text=User+Management" width="300"/> |
+| Detailed Analysis | Detailed report |
+|-------------------|----------------|
+| <img src="https://i.postimg.cc/yYR4JvgB/image.png" width="300"/> | <img src="https://i.postimg.cc/wBrYyPVq/image.png" width="300"/> |
 
 *Screenshot placeholders - Replace with actual dashboard screenshots*
 
