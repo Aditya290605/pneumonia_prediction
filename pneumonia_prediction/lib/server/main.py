@@ -24,11 +24,11 @@ app.add_middleware(
 
 load_dotenv()
 
-
 # --- Config ---
-MODEL_PATH = "attention_model.keras"   # change path
-THRESHOLD_PATH = "attention_model_threshold.pkl"   # change path
+MODEL_PATH = "attention_model.keras"   # change path if needed
+THRESHOLD_PATH = "attention_model_threshold.pkl"   # change path if needed
 IMG_SIZE = (224, 224)
+LAST_CONV_LAYER_NAME = "conv5_block16_concat"
 OUTPUT_DIR = "outputs"
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
@@ -36,7 +36,23 @@ os.makedirs(OUTPUT_DIR, exist_ok=True)
 with open(THRESHOLD_PATH, "rb") as f:
     best_thresh = pickle.load(f)
 
-model = tf.keras.models.load_model(MODEL_PATH, compile=False)
+base_model = tf.keras.models.load_model(MODEL_PATH, compile=False)
+
+# Grad-CAM model outputs conv features + predictions
+gradcam_model = tf.keras.models.Model(
+    inputs=base_model.input,
+    outputs=[
+        base_model.get_layer(LAST_CONV_LAYER_NAME).output,
+        base_model.output,
+    ],
+)
+
+# Detect input layer name
+input_layer_name = (
+    base_model.input_names[0]
+    if hasattr(base_model, "input_names")
+    else base_model.inputs[0].name.split(":")[0]
+)
 
 # --- Gemini config ---
 genai.configure(api_key=os.getenv("GEMINI_KEY"))
@@ -44,6 +60,50 @@ gemini_model = genai.GenerativeModel("gemini-2.0-flash")
 
 # Serve static diagnosed images.
 app.mount("/outputs", StaticFiles(directory=OUTPUT_DIR), name="outputs")
+
+
+# ---------------------------
+#   GRAD-CAM HELPERS (new logic)
+# ---------------------------
+def make_gradcam_heatmap(img_array, model, pred_index=None):
+    """
+    Generate Grad-CAM heatmap using prebuilt gradcam_model.
+    """
+    with tf.GradientTape() as tape:
+        conv_outputs, predictions = model({input_layer_name: img_array})
+
+        if isinstance(predictions, (list, tuple)):
+            predictions = predictions[0]
+
+        if pred_index is None:
+            pred_index = tf.argmax(predictions[0])
+
+        class_channel = predictions[:, pred_index]
+
+    grads = tape.gradient(class_channel, conv_outputs)
+    if grads is None:
+        return np.zeros((7, 7))
+
+    pooled_grads = tf.reduce_mean(grads, axis=(0, 1, 2))
+    conv_outputs = conv_outputs[0]
+
+    heatmap = conv_outputs @ pooled_grads[..., tf.newaxis]
+    heatmap = tf.squeeze(heatmap)
+    heatmap = tf.maximum(heatmap, 0) / (tf.reduce_max(heatmap) + 1e-8)
+    return heatmap.numpy()
+
+
+def create_gradcam_overlay(img, heatmap, alpha=0.4):
+    """
+    Overlay Grad-CAM heatmap on original RGB image.
+    """
+    heatmap_resized = cv2.resize(heatmap, (img.shape[1], img.shape[0]))
+    heatmap_uint8 = np.uint8(255 * heatmap_resized)
+    heatmap_color = cv2.applyColorMap(heatmap_uint8, cv2.COLORMAP_JET)
+
+    img_bgr = cv2.cvtColor(np.uint8(img), cv2.COLOR_RGB2BGR)
+    overlay = cv2.addWeighted(img_bgr, 1 - alpha, heatmap_color, alpha, 0)
+    return cv2.cvtColor(overlay, cv2.COLOR_BGR2RGB)
 
 
 # ---------------------------
@@ -68,24 +128,35 @@ async def predict(file: UploadFile = File(...)):
         img_array = np.expand_dims(img_resized / 255.0, axis=0)
 
         # --- Prediction ---
-        prob = float(model.predict(img_array, verbose=0).ravel()[0])
+        prob = float(base_model.predict({input_layer_name: img_array}, verbose=0).ravel()[0])
         prediction = "PNEUMONIA" if prob > best_thresh else "NORMAL"
 
         confidence = {
             "PNEUMONIA": round(prob * 100, 2),
-            "NORMAL": round((1 - prob) * 100, 2)
+            "NORMAL": round((1 - prob) * 100, 2),
         }
 
-        # --- Create diagnosed image ---
-        diagnosed_filename = filename.rsplit(".", 1)[0] + "_diagnosed.jpg"
+        # --- Create diagnosed image with Grad-CAM ---
+        diagnosed_filename = filename.rsplit(".", 1)[0] + "_gradcam.jpg"
         diagnosed_path = os.path.join(OUTPUT_DIR, diagnosed_filename)
 
-        output_img = img_rgb.copy()
-        color = (255, 0, 0) if prediction == "PNEUMONIA" else (0, 200, 0)
-        cv2.putText(output_img, f"{prediction} ({prob:.2f})", (20, 40),
-                    cv2.FONT_HERSHEY_SIMPLEX, 1, color, 2, cv2.LINE_AA)
-        cv2.imwrite(diagnosed_path, cv2.cvtColor(output_img, cv2.COLOR_RGB2BGR))
+        heatmap = make_gradcam_heatmap(img_array, gradcam_model)
+        overlayed_img = create_gradcam_overlay(img_rgb, heatmap)
 
+        # Add label text
+        color = (255, 0, 0) if prediction == "PNEUMONIA" else (0, 200, 0)
+        cv2.putText(
+            overlayed_img,
+            f"{prediction} ({prob:.2f})",
+            (20, 40),
+            cv2.FONT_HERSHEY_SIMPLEX,
+            1,
+            color,
+            2,
+            cv2.LINE_AA,
+        )
+
+        cv2.imwrite(diagnosed_path, cv2.cvtColor(overlayed_img, cv2.COLOR_RGB2BGR))
         diagnosed_url = f"/outputs/{diagnosed_filename}"
 
         # --- Base result ---
@@ -94,7 +165,7 @@ async def predict(file: UploadFile = File(...)):
             "probability": prob,
             "threshold_used": float(best_thresh),
             "confidence": confidence,
-            "diagnosed_image_url": diagnosed_url
+            "diagnosed_image_url": diagnosed_url,
         }
 
         # --- ALSO generate report automatically ---
@@ -115,9 +186,6 @@ async def predict(file: UploadFile = File(...)):
 # ---------------------------
 @app.post("/generate_report")
 async def generate_report(request: Request):
-    """
-    Exposed route if you want to call it separately.
-    """
     try:
         data = await request.json()
         return {"report": await generate_report_internal(data)}
